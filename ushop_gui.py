@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
                              QPushButton, QLabel, QLineEdit, QMessageBox,
                              QWidget)
 
-valid_tid_lows = ['00050000', '0005000E', '0005000C', '00050010', '0005001B', '00050030']
+valid_tid_lows = ['00050000', '0005000E', '0005000C', '00050010', '0005001B', '00050030'] + [tid.lower() for tid in ['00050000', '0005000E', '0005000C', '00050010', '0005001B', '00050030']]
 
 class Gui:
     def __init__(self):

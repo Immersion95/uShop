@@ -24,10 +24,9 @@ systitle_categories = {
     '0005000E'   # system update
 }
 
-
 def runDownload(tid: str, gui_label: object = None, version: str = ''):
     tid = tid.upper()
-    sysbase = 'http://nus.cdn.c.shop.nintendowifi.net/ccs/download/' + tid
+    sysbase = 'http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/' + tid
     appbase = 'http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/' + tid
 
     os.makedirs(tid, exist_ok=True)
@@ -51,9 +50,29 @@ def runDownload(tid: str, gui_label: object = None, version: str = ''):
     else:
         tikgen.main(tid, os.path.join(os.getcwd(), tid))
 
+    
+    if version.upper() == "ALL":
+        version_num = 0
+        max_version = 608
+        while version_num <= max_version:
+            print(f"Trying version: {version_num}")
+            try:
+                runDownload(tid, gui_label=gui_label, version=str(version_num))
+            except Exception as e:
+                print(f"Version {version_num} not found. Skipping. ({e})")
+            version_num += 16
+        print("Finished - All versions downloaded")
+        return
+
     print('Downloading TMD (title.tmd)...')
 
-    tmd = download(base + '/tmd'.format(('.' + version) if len(version) > 2 else ''))
+    try:
+        tmd = download(base + '/tmd' + ('.' + version if len(version) > 0 else ''))
+    except Exception as e:
+        print("This version doesn't exist.")
+        if gui_label is not None:
+            gui_label.setText("This version doesn't exist.")
+        return
     contents = []
     count = struct.unpack('>H', tmd[0x1DE:0x1E0])[0]
 
@@ -69,7 +88,7 @@ def runDownload(tid: str, gui_label: object = None, version: str = ''):
             # content size
             struct.unpack('>Q', tmd[0xB0C + (0x30 * c):0xB0C + (0x30 * c) + 0x8])[0],
         ])
-    with open(tid + '/title.tmd', 'wb') as f: f.write(tmd)
+    with open(tid + f'/title.tmd{f".{version}" if version else ""}', 'wb') as f: f.write(tmd)
 
     total_size = sum(c[2] for c in contents)
 
@@ -94,6 +113,10 @@ def runDownload(tid: str, gui_label: object = None, version: str = ''):
     
     if gui_label is not None:
         gui_label.setText(f'Download finished: {tid}')
+    if version:
+        print(f"Download finished: {tid} - Version {version}")
+    else:
+        print(f"Download finished: {tid} - Latest Version")
 
 # some things used from
 # http://stackoverflow.com/questions/13881092/download-progressbar-for-python-3

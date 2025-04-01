@@ -12,7 +12,7 @@ First, download the latest uShop from [here](https://github.com/SashLilac/uShop/
 You must have the Wii U common key in the file named ckey.txt.  
 Also, Python 3.5+ (?) and pycryptodome are requirements to use this program. Install it with:
 
-    $ python3 -m pip install pycryptodome
+    $ python3 -m pip install pycryptodome PyQt5
 
 To download:
 
